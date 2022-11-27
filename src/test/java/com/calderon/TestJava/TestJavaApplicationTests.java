@@ -2,6 +2,7 @@ package com.calderon.TestJava;
 
 import com.calderon.TestJava.entitis.Clientes;
 import com.calderon.TestJava.repository.ClienteRepository;
+import com.calderon.TestJava.util.Util;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +20,8 @@ class TestJavaApplicationTests {
 
     @Autowired
     ClienteRepository clienteRepository;
+    @Autowired
+    Util util;
 
     Clientes clientes;
 
@@ -41,7 +44,7 @@ class TestJavaApplicationTests {
         Assertions.assertNotEquals("Carlos", clientes.getNombre());
     }
 
-    @Disabled("Disabled until")
+    @Disabled("Disabled")
     @Test
     @DisplayName("Validador de Apellido del objeto cliente")
     void ClienteTest() {
@@ -103,5 +106,19 @@ class TestJavaApplicationTests {
             List<Clientes> obj = clienteRepository.findAll();
             Assertions.assertEquals(7, obj.size());
         }
+    }
+
+    @Test
+    @DisplayName("Validador correo verdadero")
+    void validadorCorreTestTrue() {
+        boolean valida = util.validaCorreo("hpotter@howarts.com");
+        Assertions.assertTrue(valida);
+    }
+
+    @Test
+    @DisplayName("Validador correo falso")
+    void validadorCorreTestFalse() {
+        boolean valida = util.validaCorreo("hpotterhowarts.com");
+        Assertions.assertNotEquals(true, valida);
     }
 }

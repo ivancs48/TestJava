@@ -7,6 +7,7 @@ package com.calderon.TestJava.controller;
 
 import com.calderon.TestJava.entitis.Clientes;
 import com.calderon.TestJava.repository.ClienteRepository;
+import com.calderon.TestJava.util.Util;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class ClienteRestController {
 
     @Autowired
+    Util util;
+    @Autowired
     ClienteRepository ClienteRepository;
 
     /**
@@ -59,7 +62,8 @@ public class ClienteRestController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "500", description = "Error de servidor"),
         @ApiResponse(responseCode = "400", description = "Pagina no encontrada"),
-        @ApiResponse(responseCode = "200", description = "Exito")})
+        @ApiResponse(responseCode = "200", description = "Exito"),
+        @ApiResponse(responseCode = "204", description = "Error de datos")})
     @GetMapping("/{id}")
     public Clientes get(@PathVariable Long id) {
         Clientes obj;
@@ -87,7 +91,12 @@ public class ClienteRestController {
         @ApiResponse(responseCode = "200", description = "Exito")})
     @PutMapping("/{id}")
     public ResponseEntity<?> put(@RequestBody Clientes input) {
-        Clientes clientes = ClienteRepository.save(input);
+        Clientes clientes = new Clientes();
+        if (util.validaCorreo(input.getEmail())) {
+            clientes = ClienteRepository.save(input);
+        } else {
+            return ResponseEntity.status(204).build();
+        }
         return ResponseEntity.ok(clientes);
     }
 
@@ -101,10 +110,16 @@ public class ClienteRestController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "500", description = "Error de servidor"),
         @ApiResponse(responseCode = "400", description = "Pagina no encontrada"),
-        @ApiResponse(responseCode = "200", description = "Exito")})
+        @ApiResponse(responseCode = "200", description = "Exito"),
+        @ApiResponse(responseCode = "204", description = "Error de datos")})
     @PostMapping
     public ResponseEntity<?> post(@RequestBody Clientes input) {
-        Clientes save = ClienteRepository.save(input);
+        Clientes save;
+        if (util.validaCorreo(input.getEmail())) {
+            save = ClienteRepository.save(input);
+        } else {
+            return ResponseEntity.status(204).build();
+        }
         return ResponseEntity.ok(save);
     }
 
